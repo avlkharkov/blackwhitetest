@@ -19,7 +19,7 @@
 /*                                                                 */
 /*******************************************************************/
 
-#include "Skeleton.h"
+#include "BlackWhiteTest.h"
 
 typedef struct {
 	A_u_long	index;
@@ -30,7 +30,7 @@ typedef struct {
 
 TableString		g_strs[StrID_NUMTYPES] = {
 	StrID_NONE,						"",
-	StrID_Name,						"Skeleton",
+	StrID_Name,						"BlackWhiteTest",
 	StrID_Description,				"An empty (skeletal, if you will) effect sample,\r for your modifying pleasure.\rCopyright 2007 Adobe Systems Incorporated.",
 	StrID_Gain_Param_Name,			"Gain",
 	StrID_Color_Param_Name,			"Color",

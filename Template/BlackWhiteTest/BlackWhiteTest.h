@@ -20,13 +20,13 @@
 /*******************************************************************/
 
 /*
-	Skeleton.h
+	BlackWhiteTest.h
 */
 
 #pragma once
 
-#ifndef SKELETON_H
-#define SKELETON_H
+#ifndef BLACKWHITETEST_H
+#define BLACKWHITETEST_H
 
 typedef unsigned char		u_char;
 typedef unsigned short		u_short;
@@ -57,7 +57,7 @@ typedef short int			int16;
 #include "AEFX_ChannelDepthTpl.h"
 #include "AEGP_SuiteHandler.h"
 
-#include "Skeleton_Strings.h"
+#include "BlackWhiteTest_Strings.h"
 
 /* Versioning information */
 
@@ -70,15 +70,15 @@ typedef short int			int16;
 
 /* Parameter defaults */
 
-#define	SKELETON_GAIN_MIN		0
-#define	SKELETON_GAIN_MAX		100
-#define	SKELETON_GAIN_DFLT		10
+#define	BLACKWHITETEST_GAIN_MIN		0
+#define	BLACKWHITETEST_GAIN_MAX		100
+#define	BLACKWHITETEST_GAIN_DFLT		10
 
 enum {
-	SKELETON_INPUT = 0,
-	SKELETON_GAIN,
-	SKELETON_COLOR,
-	SKELETON_NUM_PARAMS
+	BLACKWHITETEST_INPUT = 0,
+	BLACKWHITETEST_GAIN,
+	BLACKWHITETEST_COLOR,
+	BLACKWHITETEST_NUM_PARAMS
 };
 
 enum {
@@ -105,4 +105,4 @@ extern "C" {
 
 }
 
-#endif // SKELETON_H
+#endif // BLACKWHITETEST_H

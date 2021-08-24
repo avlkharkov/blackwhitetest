@@ -19,7 +19,7 @@
 /*                                                                 */
 /*******************************************************************/
 
-/*	Skeleton.cpp	
+/*	BlackWhiteTest.cpp	
 
 	This is a compiling husk of a project. Fill it in with interesting
 	pixel processing code.
@@ -41,7 +41,7 @@
 
 */
 
-#include "Skeleton.h"
+#include "BlackWhiteTest.h"
 
 static PF_Err 
 About (	
@@ -92,11 +92,11 @@ ParamsSetup (
 	AEFX_CLR_STRUCT(def);
 
 	PF_ADD_FLOAT_SLIDERX(	STR(StrID_Gain_Param_Name), 
-							SKELETON_GAIN_MIN, 
-							SKELETON_GAIN_MAX, 
-							SKELETON_GAIN_MIN, 
-							SKELETON_GAIN_MAX, 
-							SKELETON_GAIN_DFLT,
+							BLACKWHITETEST_GAIN_MIN, 
+							BLACKWHITETEST_GAIN_MAX, 
+							BLACKWHITETEST_GAIN_MIN, 
+							BLACKWHITETEST_GAIN_MAX, 
+							BLACKWHITETEST_GAIN_DFLT,
 							PF_Precision_HUNDREDTHS,
 							0,
 							0,
@@ -110,7 +110,7 @@ ParamsSetup (
 					PF_MAX_CHAN8,
 					COLOR_DISK_ID);
 	
-	out_data->num_params = SKELETON_NUM_PARAMS;
+	out_data->num_params = BLACKWHITETEST_NUM_PARAMS;
 
 	return err;
 }
@@ -187,13 +187,13 @@ Render (
 	A_long				linesL	= 0;
 
 	linesL 		= output->extent_hint.bottom - output->extent_hint.top;
-	giP.gainF 	= params[SKELETON_GAIN]->u.fs_d.value;
+	giP.gainF 	= params[BLACKWHITETEST_GAIN]->u.fs_d.value;
 	
 	if (PF_WORLD_IS_DEEP(output)){
 		ERR(suites.Iterate16Suite1()->iterate(	in_data,
 												0,								// progress base
 												linesL,							// progress final
-												&params[SKELETON_INPUT]->u.ld,	// src 
+												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
 												(void*)&giP,					// refcon - your custom data pointer
 												MySimpleGainFunc16,				// pixel function pointer
@@ -202,7 +202,7 @@ Render (
 		ERR(suites.Iterate8Suite1()->iterate(	in_data,
 												0,								// progress base
 												linesL,							// progress final
-												&params[SKELETON_INPUT]->u.ld,	// src 
+												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
 												(void*)&giP,					// refcon - your custom data pointer
 												MySimpleGainFunc8,				// pixel function pointer
@@ -226,8 +226,8 @@ PF_Err PluginDataEntryFunction(
 	result = PF_REGISTER_EFFECT(
 		inPtr,
 		inPluginDataCallBackPtr,
-		"Skeleton", // Name
-		"ADBE Skeleton", // Match Name
+		"BlackWhiteTest", // Name
+		"ADBE BlackWhiteTest", // Match Name
 		"Sample Plug-ins", // Category
 		AE_RESERVED_INFO); // Reserved Info
 
