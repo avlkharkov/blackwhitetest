@@ -104,19 +104,50 @@ ParamsSetup (
 
 	AEFX_CLR_STRUCT(def);
 
-	PF_ADD_COLOR(	STR(StrID_Color_Param_Name), 
-					PF_HALF_CHAN8,
-					PF_MAX_CHAN8,
-					PF_MAX_CHAN8,
-					COLOR_DISK_ID);
-	
+	PF_ADD_FLOAT_SLIDERX(STR(StrID_R_Weight_Param_Name),
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_R_WEIGHT_DFLT,
+		PF_Precision_INTEGER,
+		0,
+		0,
+		R_WEIGHT_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	PF_ADD_FLOAT_SLIDERX(STR(StrID_G_Weight_Param_Name),
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_G_WEIGHT_DFLT,
+		PF_Precision_INTEGER,
+		0,
+		0,
+		G_WEIGHT_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	PF_ADD_FLOAT_SLIDERX(STR(StrID_B_Weight_Param_Name),
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_WEIGHT_MIN,
+		BLACKWHITETEST_WEIGHT_MAX,
+		BLACKWHITETEST_B_WEIGHT_DFLT,
+		PF_Precision_INTEGER,
+		0,
+		0,
+		B_WEIGHT_DISK_ID);
+
 	out_data->num_params = BLACKWHITETEST_NUM_PARAMS;
 
 	return err;
 }
 
 static PF_Err
-MySimpleGainFunc16 (
+ConvertToGreyFunc16 (
 	void		*refcon, 
 	A_long		xL, 
 	A_long		yL, 
@@ -126,25 +157,22 @@ MySimpleGainFunc16 (
 	PF_Err		err = PF_Err_NONE;
 
 	GainInfo	*giP	= reinterpret_cast<GainInfo*>(refcon);
-	PF_FpLong	tempF	= 0;
+	PF_FpLong	brightness = 0;
 					
 	if (giP){
-		tempF = giP->gainF * PF_MAX_CHAN16 / 100.0;
-		if (tempF > PF_MAX_CHAN16){
-			tempF = PF_MAX_CHAN16;
-		};
+		brightness = (inP->red * giP->rWeightF + inP->green * giP->gWeightF + inP->blue * giP->bWeightF) / 100.0;
 
 		outP->alpha		=	inP->alpha;
-		outP->red		=	MIN((inP->red	+ (A_u_char) tempF), PF_MAX_CHAN16);
-		outP->green		=	MIN((inP->green	+ (A_u_char) tempF), PF_MAX_CHAN16);
-		outP->blue		=	MIN((inP->blue	+ (A_u_char) tempF), PF_MAX_CHAN16);
+		outP->red		=	MIN(A_u_short(brightness), PF_MAX_CHAN16);
+		outP->green		=	MIN(A_u_short(brightness), PF_MAX_CHAN16);
+		outP->blue		=	MIN(A_u_short(brightness), PF_MAX_CHAN16);
 	}
 
 	return err;
 }
 
 static PF_Err
-MySimpleGainFunc8 (
+ConvertToGreyFunc8 (
 	void		*refcon, 
 	A_long		xL, 
 	A_long		yL, 
@@ -154,18 +182,15 @@ MySimpleGainFunc8 (
 	PF_Err		err = PF_Err_NONE;
 
 	GainInfo	*giP	= reinterpret_cast<GainInfo*>(refcon);
-	PF_FpLong	tempF	= 0;
+	PF_FpLong	brightness = 0;
 					
 	if (giP){
-		tempF = giP->gainF * PF_MAX_CHAN8 / 100.0;
-		if (tempF > PF_MAX_CHAN8){
-			tempF = PF_MAX_CHAN8;
-		};
+		brightness = (inP->red * giP->rWeightF + inP->green * giP->gWeightF + inP->blue * giP->bWeightF) / 100.0;
 
 		outP->alpha		=	inP->alpha;
-		outP->red		=	MIN((inP->red	+ (A_u_char) tempF), PF_MAX_CHAN8);
-		outP->green		=	MIN((inP->green	+ (A_u_char) tempF), PF_MAX_CHAN8);
-		outP->blue		=	MIN((inP->blue	+ (A_u_char) tempF), PF_MAX_CHAN8);
+		outP->red		=	MIN((A_u_char)brightness, PF_MAX_CHAN8);
+		outP->green		=	MIN((A_u_char)brightness, PF_MAX_CHAN8);
+		outP->blue		=	MIN((A_u_char)brightness, PF_MAX_CHAN8);
 	}
 
 	return err;
@@ -188,7 +213,10 @@ Render (
 
 	linesL 		= output->extent_hint.bottom - output->extent_hint.top;
 	giP.gainF 	= params[BLACKWHITETEST_GAIN]->u.fs_d.value;
-	
+	giP.rWeightF = params[BLACKWHITETEST_R_WEIGHT]->u.fs_d.value;
+	giP.gWeightF = params[BLACKWHITETEST_G_WEIGHT]->u.fs_d.value;
+	giP.bWeightF = params[BLACKWHITETEST_B_WEIGHT]->u.fs_d.value;
+
 	if (PF_WORLD_IS_DEEP(output)){
 		ERR(suites.Iterate16Suite1()->iterate(	in_data,
 												0,								// progress base
@@ -196,7 +224,7 @@ Render (
 												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
 												(void*)&giP,					// refcon - your custom data pointer
-												MySimpleGainFunc16,				// pixel function pointer
+												ConvertToGreyFunc16,				// pixel function pointer
 												output));
 	} else {
 		ERR(suites.Iterate8Suite1()->iterate(	in_data,
@@ -205,7 +233,7 @@ Render (
 												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
 												(void*)&giP,					// refcon - your custom data pointer
-												MySimpleGainFunc8,				// pixel function pointer
+												ConvertToGreyFunc8,				// pixel function pointer
 												output));	
 	}
 
