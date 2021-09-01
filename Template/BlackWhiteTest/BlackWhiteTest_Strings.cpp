@@ -32,7 +32,6 @@ TableString		g_strs[StrID_NUMTYPES] = {
 	StrID_NONE,						"",
 	StrID_Name,						"BlackWhiteTest",
 	StrID_Description,				"An empty (skeletal, if you will) effect sample,\r for your modifying pleasure.\rCopyright 2007 Adobe Systems Incorporated.",
-	StrID_Gain_Param_Name,			"Gain",
 	StrID_R_Weight_Param_Name,      "R Weight",
 	StrID_G_Weight_Param_Name,      "G Weight",
 	StrID_B_Weight_Param_Name,      "B Weight",

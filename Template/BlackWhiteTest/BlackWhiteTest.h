@@ -70,9 +70,6 @@ typedef short int			int16;
 
 /* Parameter defaults */
 
-#define	BLACKWHITETEST_GAIN_MIN          0
-#define	BLACKWHITETEST_GAIN_MAX          100
-#define	BLACKWHITETEST_GAIN_DFLT         10
 #define BLACKWHITETEST_WEIGHT_MIN       -100
 #define BLACKWHITETEST_WEIGHT_MAX        100
 #define BLACKWHITETEST_R_WEIGHT_DFLT     30
@@ -81,7 +78,6 @@ typedef short int			int16;
 
 enum {
 	BLACKWHITETEST_INPUT = 0,
-	BLACKWHITETEST_GAIN,
 	BLACKWHITETEST_R_WEIGHT,
 	BLACKWHITETEST_G_WEIGHT,
 	BLACKWHITETEST_B_WEIGHT,
@@ -89,18 +85,16 @@ enum {
 };
 
 enum {
-	GAIN_DISK_ID = 1,
-	R_WEIGHT_DISK_ID,
+	R_WEIGHT_DISK_ID = 1,
 	G_WEIGHT_DISK_ID,
 	B_WEIGHT_DISK_ID,
 };
 
-typedef struct GainInfo{
-	PF_FpLong	gainF;
+typedef struct WeightInfo{
 	PF_FpLong	rWeightF;
 	PF_FpLong	gWeightF;
 	PF_FpLong	bWeightF;
-} GainInfo, *GainInfoP, **GainInfoH;
+} WeightInfo, *WeightInfoP, **WeightInfoH;
 
 
 extern "C" {

@@ -91,19 +91,6 @@ ParamsSetup (
 
 	AEFX_CLR_STRUCT(def);
 
-	PF_ADD_FLOAT_SLIDERX(	STR(StrID_Gain_Param_Name), 
-							BLACKWHITETEST_GAIN_MIN, 
-							BLACKWHITETEST_GAIN_MAX, 
-							BLACKWHITETEST_GAIN_MIN, 
-							BLACKWHITETEST_GAIN_MAX, 
-							BLACKWHITETEST_GAIN_DFLT,
-							PF_Precision_HUNDREDTHS,
-							0,
-							0,
-							GAIN_DISK_ID);
-
-	AEFX_CLR_STRUCT(def);
-
 	PF_ADD_FLOAT_SLIDERX(STR(StrID_R_Weight_Param_Name),
 		BLACKWHITETEST_WEIGHT_MIN,
 		BLACKWHITETEST_WEIGHT_MAX,
@@ -156,11 +143,15 @@ ConvertToGreyFunc16 (
 {
 	PF_Err		err = PF_Err_NONE;
 
-	GainInfo	*giP	= reinterpret_cast<GainInfo*>(refcon);
+	WeightInfo	*wiP	= reinterpret_cast<WeightInfo*>(refcon);
 	PF_FpLong	brightness = 0;
 					
-	if (giP){
-		brightness = (inP->red * giP->rWeightF + inP->green * giP->gWeightF + inP->blue * giP->bWeightF) / 100.0;
+	if (wiP){
+		brightness = (inP->red * wiP->rWeightF + inP->green * wiP->gWeightF + inP->blue * wiP->bWeightF) / 100.0;
+		if (brightness < 0)
+		{
+			brightness = 0;
+		}
 
 		outP->alpha		=	inP->alpha;
 		outP->red		=	MIN(A_u_short(brightness), PF_MAX_CHAN16);
@@ -181,11 +172,15 @@ ConvertToGreyFunc8 (
 {
 	PF_Err		err = PF_Err_NONE;
 
-	GainInfo	*giP	= reinterpret_cast<GainInfo*>(refcon);
+	WeightInfo	*wiP	= reinterpret_cast<WeightInfo*>(refcon);
 	PF_FpLong	brightness = 0;
 					
-	if (giP){
-		brightness = (inP->red * giP->rWeightF + inP->green * giP->gWeightF + inP->blue * giP->bWeightF) / 100.0;
+	if (wiP){
+		brightness = (inP->red * wiP->rWeightF + inP->green * wiP->gWeightF + inP->blue * wiP->bWeightF) / 100.0;
+		if (brightness < 0)
+		{
+			brightness = 0;
+		}
 
 		outP->alpha		=	inP->alpha;
 		outP->red		=	MIN((A_u_char)brightness, PF_MAX_CHAN8);
@@ -207,15 +202,14 @@ Render (
 	AEGP_SuiteHandler	suites(in_data->pica_basicP);
 
 	/*	Put interesting code here. */
-	GainInfo			giP;
-	AEFX_CLR_STRUCT(giP);
+	WeightInfo			wiP;
+	AEFX_CLR_STRUCT(wiP);
 	A_long				linesL	= 0;
 
 	linesL 		= output->extent_hint.bottom - output->extent_hint.top;
-	giP.gainF 	= params[BLACKWHITETEST_GAIN]->u.fs_d.value;
-	giP.rWeightF = params[BLACKWHITETEST_R_WEIGHT]->u.fs_d.value;
-	giP.gWeightF = params[BLACKWHITETEST_G_WEIGHT]->u.fs_d.value;
-	giP.bWeightF = params[BLACKWHITETEST_B_WEIGHT]->u.fs_d.value;
+	wiP.rWeightF = params[BLACKWHITETEST_R_WEIGHT]->u.fs_d.value;
+	wiP.gWeightF = params[BLACKWHITETEST_G_WEIGHT]->u.fs_d.value;
+	wiP.bWeightF = params[BLACKWHITETEST_B_WEIGHT]->u.fs_d.value;
 
 	if (PF_WORLD_IS_DEEP(output)){
 		ERR(suites.Iterate16Suite1()->iterate(	in_data,
@@ -223,7 +217,7 @@ Render (
 												linesL,							// progress final
 												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
-												(void*)&giP,					// refcon - your custom data pointer
+												(void*)&wiP,					// refcon - your custom data pointer
 												ConvertToGreyFunc16,				// pixel function pointer
 												output));
 	} else {
@@ -232,7 +226,7 @@ Render (
 												linesL,							// progress final
 												&params[BLACKWHITETEST_INPUT]->u.ld,	// src 
 												NULL,							// area - null for all pixels
-												(void*)&giP,					// refcon - your custom data pointer
+												(void*)&wiP,					// refcon - your custom data pointer
 												ConvertToGreyFunc8,				// pixel function pointer
 												output));	
 	}
